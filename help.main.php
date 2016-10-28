@@ -1,11 +1,15 @@
 <?php
 /**
- * This is the main/default page template.
+ * This is the template that displays the help screen for a collection
  *
- * For a quick explanation of b2evo 2.0 skins, please start here:
- * {@link http://b2evolution.net/man/skin-development-primer}
+ * This file is not meant to be called directly.
+ * It is meant to be called by an include in the main.page.php template.
+ * To display the archive directory, you should call a stub AND pass the right parameters
+ * For example: /blogs/index.php?disp=help
  *
- * It is used to display the blog when no specific page template is available to handle the request.
+ * b2evolution - {@link http://b2evolution.net/}
+ * Released under GNU GPL License - {@link http://b2evolution.net/about/gnu-gpl-license}
+ * @copyright (c)2003-2016 by Francois Planque - {@link http://fplanque.com/}
  *
  * @package evoskins
  * @subpackage dating_mood
@@ -13,7 +17,7 @@
 if( !defined('EVO_MAIN_INIT') ) die( 'Please, do not access this page directly.' );
 
 
-global $Hit;
+global $app_version, $disp, $Blog;
 
 // This is the main template; it may be used to display very different things.
 // Do inits depending on current $disp:
@@ -82,29 +86,6 @@ siteskin_include( '_site_body_header.inc.php' );
 
 <!-- =================================== START OF MAIN AREA =================================== -->
 
-<div class="top_menu">
-	<ul>
-	<?php
-		// ------------------------- "Menu" CONTAINER EMBEDDED HERE --------------------------
-		// Display container and contents:
-		// Note: this container is designed to be a single <ul> list
-		skin_container( NT_('Menu'), array(
-				// The following params will be used as defaults for widgets included in this container:
-				'block_start'         => '',
-				'block_end'           => '',
-				'block_display_title' => false,
-				'list_start'          => '',
-				'list_end'            => '',
-				'item_start'          => '<li>',
-				'item_end'            => '</li>',
-				'item_title_before'   => '',
-				'item_title_after'    => '',
-			) );
-		// ----------------------------- END OF "Menu" CONTAINER -----------------------------
-	?>
-	</ul>
-	<div class="clear"></div>
-</div>
 
 <?php
 	// ------------------------- MESSAGES GENERATED FROM ACTIONS -------------------------
@@ -116,19 +97,6 @@ siteskin_include( '_site_body_header.inc.php' );
 ?>
 
 <?php
-	// ------------------- PREV/NEXT POST LINKS (SINGLE POST MODE) -------------------
-	item_prevnext_links( array(
-			'block_start' => '<table class="prevnext_post"><tr>',
-			'prev_start'  => '<td>',
-			'prev_end'    => '</td>',
-			'next_start'  => '<td class="right">',
-			'next_end'    => '</td>',
-			'block_end'   => '</tr></table>',
-		) );
-	// ------------------------- END OF PREV/NEXT POST LINKS -------------------------
-?>
-
-<?php
 	// ------------------------- TITLE FOR THE CURRENT REQUEST -------------------------
 	request_title( array(
 			'title_before'=> '<h2>',
@@ -137,66 +105,18 @@ siteskin_include( '_site_body_header.inc.php' );
 			'glue'        => ' - ',
 			'title_single_disp' => true,
 			'format'      => 'htmlbody',
-			'user_text'   => '',
 		) );
 	// ------------------------------ END OF REQUEST TITLE -----------------------------
 ?>
 
 <?php
-if( $disp != 'front' && $disp != 'download' && $disp != 'terms' )
-{
-	// -------------------- PREV/NEXT PAGE LINKS (POST LIST MODE) --------------------
-	mainlist_page_links( array(
-			'block_start' => '<p class="center">'.T_('Pages:').' <strong>',
-			'block_end' => '</strong></p>',
-		) );
-	// ------------------------- END OF PREV/NEXT PAGE LINKS -------------------------
+	// -------------- MAIN CONTENT TEMPLATE INCLUDED HERE (Based on $disp) --------------
+	skin_include( '$disp$' );
+	// Note: you can customize any of the sub templates included here by
+	// copying the matching php file into your skin directory.
+	// ------------------------- END OF MAIN CONTENT TEMPLATE ---------------------------
 ?>
 
-<?php
-	// ------------------------------------ START OF POSTS ----------------------------------------
-	// Display message if no post:
-	display_if_empty();
-
-	echo '<div class="evo_content_block">'; // Beginning of posts display
-	while( $Item = & mainlist_get_item() )
-	{ // For each blog post, do everything below up to the closing curly brace "}"
-
-		// ---------------------- ITEM BLOCK INCLUDED HERE ------------------------
-		skin_include( '_item_block.inc.php', array(
-				'content_mode' => 'auto',		// 'auto' will auto select depending on $disp-detail
-				'image_size'   => 'fit-400x320',
-			) );
-		// ----------------------------END ITEM BLOCK  ----------------------------
-
-	} // ---------------------------------- END OF POSTS ------------------------------------
-	echo '</div>'; // End of posts display
-
-?>
-
-	<?php
-	// -------------------- PREV/NEXT PAGE LINKS (POST LIST MODE) --------------------
-	mainlist_page_links( array(
-			'block_start' => '<p class="center">'.T_('Pages:').' <strong>',
-			'block_end' => '</strong></p>',
-		) );
-	// ------------------------- END OF PREV/NEXT PAGE LINKS -------------------------
-}
-	?>
-
-
-	<?php
-		// -------------- MAIN CONTENT TEMPLATE INCLUDED HERE (Based on $disp) --------------
-		skin_include( '$disp$', array(
-				'disp_posts'  => '',		// We already handled this case above
-				'disp_single' => '',		// We already handled this case above
-				'disp_page'   => '',		// We already handled this case above
-				'author_link_text' => 'auto',
-			) );
-		// Note: you can customize any of the sub templates included here by
-		// copying the matching php file into your skin directory.
-		// ------------------------- END OF MAIN CONTENT TEMPLATE ---------------------------
-	?>
 </div>
 </div>
 
@@ -204,32 +124,6 @@ if( $disp != 'front' && $disp != 'download' && $disp != 'terms' )
 <!-- =================================== START OF SIDEBAR =================================== -->
 <div class="bSideBar">
 <div class="innerwrap">
-
-	<?php
-		// ------------------------- "Sidebar" CONTAINER EMBEDDED HERE --------------------------
-		skin_container( NT_('Sidebar'), array(
-				// The following (optional) params will be used as defaults for widgets included in this container:
-				// This will enclose each widget in a block:
-				'block_start' => '<div class="bSideItem wigdet $wi_class$">',
-				'block_end' => '</div>',
-				// This will enclose the title of each widget:
-				'block_title_start' => '<h3>',
-				'block_title_end' => '</h3>',
-				// If a widget displays a list, this will enclose that list:
-				'list_start' => '<ul>',
-				'list_end' => '</ul>',
-				// This will enclose each item in a list:
-				'item_start' => '<li>',
-				'item_end' => '</li>',
-				// This will enclose sub-lists in a list:
-				'group_start' => '<ul>',
-				'group_end' => '</ul>',
-				// This will enclose (foot)notes:
-				'notes_start' => '<div class="notes">',
-				'notes_end' => '</div>',
-			) );
-		// ----------------------------- END OF "Sidebar" CONTAINER -----------------------------
-	?>
 
 	<?php
 		// Please help us promote b2evolution and leave this logo on your blog:
