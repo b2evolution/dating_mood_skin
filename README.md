@@ -6,6 +6,10 @@ Link to skin: http://skins.b2evolution.net/dating-mood-skin
 
 ### Update Log
 
+#### v6.7.8
+
+- Sync with built-in b2evolution skin version
+
 #### v6.7.7
 
 - Sync with built-in b2evolution skin version
